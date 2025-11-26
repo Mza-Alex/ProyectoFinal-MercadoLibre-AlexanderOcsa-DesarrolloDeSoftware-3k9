@@ -12,7 +12,7 @@ Materia: Desarrollo de Software
 
 Año: 2025
 __________________________________________
-🎯 **Objetivo del Proyecto**
+ **Objetivo del Proyecto**
 -------------------------------------------
 Este proyecto implementa una API REST en Spring Boot capaz de determinar si un ADN corresponde a un mutante según el desafío técnico de MercadoLibre.
 
@@ -32,7 +32,7 @@ GET /stats → Devuelve estadísticas globales
 
 Además, cada ADN se almacena en una base de datos H2 utilizando un hash SHA-256 para evitar procesamientos duplicados.
 
-🏗️ Arquitectura del Proyecto
+🏗 Arquitectura del Proyecto
 ------------------------------------------
 El proyecto utiliza una arquitectura en capas clara y mantenible:
 
@@ -69,13 +69,13 @@ El proyecto utiliza una arquitectura en capas clara y mantenible:
 
 **Validator:** Valida la entrada del usuario (sí tiene formato correcto)
 
-🧪 **Algoritmo de Detección**
+ **Algoritmo de Detección**
 ----------------------------------
 El algoritmo detecta secuencias de 4 caracteres iguales revisando: Horizontal, vertical o diagonal.
 
 Termina anticipadamente cuando encuentra más de una secuencia válida, cumpliendo el requisito de eficiencia.
 
-🚀 Endpoints Disponibles
+ Endpoints Disponibles
 ---------------------------------
 🔹 POST /mutant
 
@@ -101,8 +101,27 @@ Respuesta
 "count_human_dna": 20,
 "ratio": 0.5
 }
+___________
+Instalación y Ejecución Local
+-----------------
+Prerrequisitos
+Java Development Kit (JDK): 
+Versión 17 o superior.
+
+Git: Para clonar el repositorio.
+
+1- Clonar el repositorio: https://github.com/Mza-Alex/ProyectoFinal-MercadoLibre-AlexanderOcsa-DesarrolloDeSoftware-3k9.git
+
+2- Compilar y ejecutar la aplicación
+
+Como se usa el wrapper de Gradle:
+
+ En windows: gradlew.bat bootRun
+
+En linux: ./gradlew bootRun
+
 _________
-🧪 Tests del Proyecto
+ Tests del Proyecto
 ---------
 El proyecto incluye una suite completa de tests unitarios y de integración para garantizar el correcto funcionamiento de cada capa.
 
@@ -115,17 +134,24 @@ El proyecto incluye una suite completa de tests unitarios y de integración para
 **DnaValidatorTest:** Valida matriz NxN, caracteres válidos y longitudes correctas.
 
 **MutantDetectorTest:** Detecta secuencias mutantes en horizontal, vertical y diagonal.
+
+Estos test son ejecutados con .\gradlew.bat clean test (Windows), ./gradlew clean test (Mac/Linux), o gradlew test en cualquier OS
 _________
 
-💾 Base de Datos (H2)
+ Forma para usar la API (Endpoints)
 ---------
 
-La aplicación utiliza a H2 como base de datos en memoria.
+Con el programa corriendo, para ver que fincione correctamente accedemos a los siguientes sitios:
 
-Consola H2
-http://localhost:8080/h2-console
+### En URL local:
+    Swagger UI:   http://localhost:8080
+    Base de Datos local: http://localhost:8080/h2-console
 
-Credenciales
+### URL Remota(Render):
+    Swagger UI: https://mutantes-api-z661.onrender.com/swagger-ui/index.html
+    Base de Datos: https://mutantes-api-z661.onrender.com/h2-console
+
+Para el ingreso a la base de datos colocar:
 
 
 JDBC URL ->	jdbc:h2:mem:testdb
@@ -133,26 +159,3 @@ JDBC URL ->	jdbc:h2:mem:testdb
 User ->	sa
 
 Password ->	(vacío)
-
-🐳 **Docker - Ejecución con Contenedor**
-
-### Construir imagen
-    docker build -t mutantes-api .
-
-#### Ejecutar contenedor: 
-    docker run -p 8080:8080 mutantes-api
-
-
-La API responderá en:
-
-👉 http://localhost:8080
-
-### ▶ Cómo Ejecutar Localmente (sin Docker)
-    ./gradlew bootRun
-
-### ✔ Proyecto Listo para Deploy
-
-Cuando completes el deploy, podés agregar acá:
-
-Recurso	URL
-Render Deployment	(pendiente)
