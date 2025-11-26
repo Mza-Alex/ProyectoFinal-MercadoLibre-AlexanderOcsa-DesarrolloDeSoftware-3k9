@@ -1,0 +1,109 @@
+@startuml
+title **Flujo Completo de la API — Proyecto Mutantes**\nDetección, Caché y Estadísticas
+
+skinparam backgroundColor #FFFFFF
+skinparam sequence {
+    ArrowColor #3A3A3A
+    LifeLineBorderColor #3A3A3A
+    LifeLineBackgroundColor #F7F7F7
+    ParticipantBorderColor #3A3A3A
+    ParticipantBackgroundColor #EFEFEF
+    BoxBorderColor #999999
+    BoxPadding 15
+}
+
+actor Cliente
+
+participant "MutantController" as C
+participant "DnaRequestValidation\n(@ValidDnaSequence)" as V
+participant "MutantService" as S
+participant "MutantDetector" as D
+database "DnaRecordRepository" as R
+
+' ------>       1) POST /mutant — DETECCIÓN Y CACHÉ
+
+box "1. POST /mutant — Detección y Caché" #DDEEFF
+
+Cliente -> C: 1. POST /mutant (DnaRequest)
+activate C
+
+C -> V: 2. Validar(dna)
+activate V
+V --> C: 3. OK / Error 400
+deactivate V
+
+C -> S: 4. isMutant(dnaArray)
+activate S
+
+note right of S #FFF8B0
+"Se genera un hash único\nusando SHA-256"
+end note
+
+S -> S: 5. calculateHash(dna)
+
+S -> R: 6. existsByHash(hash)
+activate R
+R --> S: 7. exists? (boolean)
+deactivate R
+
+alt Cache Hit (exists == true)
+    S -> R: 8. findByHash(hash)
+    activate R
+    R --> S: 9. DnaRecord(isMutant)
+    deactivate R
+else Cache Miss (exists == false)
+    S -> D: 10. isMutant(dnaArray)
+    activate D
+    D --> S: 11. MutantResult (true/false)
+    deactivate D
+
+    S -> R: 12. save(new DnaRecord(hash, result))
+    activate R
+    R --> S: 13. Saved
+    deactivate R
+end
+
+S --> C: 14. isMutantResult
+deactivate S
+
+alt Resultado Mutante
+    C --> Cliente: 15. 200 OK
+else Resultado Humano
+    C --> Cliente: 16. 403 Forbidden
+end
+
+deactivate C
+
+end box
+
+' ------>       2) GET /stats — OBTENCIÓN DE ESTADÍSTICAS
+
+
+box "2. GET /stats — Estadísticas del Sistema" #E9FFE9
+
+Cliente -> C: 17. GET /stats
+activate C
+
+C -> S: 18. getStatistics()
+activate S
+
+S -> R: 19. countByIsMutant(true)
+R --> S: 20. countMutantDna
+
+S -> R: 21. countByIsMutant(false)
+R --> S: 22. countHumanDna
+
+note right of S #FFF8B0
+"ratio = mutants / humans"
+end note
+
+S -> S: 23. calculateRatio(mutants, humans)
+
+S --> C: 24. StatsResponse(count_mutant_dna,\ncount_human_dna, ratio)
+deactivate S
+
+C --> Cliente: 25. 200 OK (JSON)
+deactivate C
+
+end box
+@enduml
