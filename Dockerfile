@@ -12,7 +12,7 @@ RUN ./gradlew clean build --no-daemon -x test
 FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
 
-COPY --from=build /home/gradle/project/build/libs/mutantes_project-1.0.jar app.jar
+COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
